@@ -1,0 +1,137 @@
+<!-- templates/upload_question_bank.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Question Bank</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .form-header {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .custom-prompt {
+            height: 120px;
+        }
+        .required:after {
+            content: " *";
+            color: #e74c3c;
+        }
+    </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ url_for('static', filename='account.js') }}" defer></script>
+    {% include 'theme_head.html' %}
+</head>
+<body class="bg-light qpg-app qpg-form-page">
+    {% include 'account_nav.html' %}
+    {% set page = ('Enhance Question Bank', 'Build on your existing question bank with carefully generated content.', 'fa-cloud-upload-alt', 'Assessment studio') %}
+    {% include 'page_header.html' %}
+    <div class="container py-5">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form action="/upload_question_bank" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-section">
+                <h3 class="form-header">Question Bank Details</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label required">Grade:</label>
+                        <input type="text" name="grade" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label required">Subject:</label>
+                        <input type="text" name="subject" class="form-control" required>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label required">Board:</label>
+                        <select name="board" class="form-select" required>
+                            <option value="Cambridge IGCSE">Cambridge IGCSE</option>
+                            <option value="CBSE">CBSE</option>
+                            <option value="ICSE">ICSE</option>
+                            <option value="SSC">SSC</option>
+                            <option value="HSC">HSC</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-header">Content Specifications</h3>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label required">Bloom's Taxonomy Levels:</label>
+                        <div class="row">
+                            {% for level in ['Remember', 'Understand', 'Apply', 'Analyze', 'Evaluate', 'Create'] %}
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="blooms_levels" value="{{ level }}" id="bloom-{{ level }}">
+                                    <label class="form-check-label" for="bloom-{{ level }}">{{ level }}</label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label required">Number of Questions to Generate:</label>
+                        <input type="number" name="num_questions" class="form-control" required min="1">
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Custom Prompt / Instructions:</label>
+                        <textarea name="custom_prompt" class="form-control custom-prompt" placeholder="Add any specific instructions or context for the AI..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-header">Upload Question Bank</h3>
+                <div class="mb-3">
+                    <label class="form-label required">Question Bank File (Excel only):</label>
+                    <input type="file" name="question_bank" class="form-control" required accept=".xlsx">
+                    <div class="form-text">Upload your existing question bank in Excel format</div>
+                </div>
+            </div>
+            
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg py-3">
+                    <i class="fas fa-upload me-2"></i>Upload and Enhance
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Home
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'app_footer.html' %}
+</body>
+</html>

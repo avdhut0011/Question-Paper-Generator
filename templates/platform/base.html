@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}QPG · Ashoka Group of Schools{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='platform-layout.css', v='20261016-material-1') }}">
+{% block head %}{% endblock %}
+{% include 'theme_head.html' %}
+</head>
+<body class="qpg-app qpg-platform">
+{% include 'account_nav.html' %}
+{% set pages = {
+'platform.history': ('Generation history','Every paper, draft, and generation attempt in one place.','fa-history','Your workspace'),
+'platform.admin': ('Staff & schools','Manage your school community and teaching assignments.','fa-users','Administration'),
+'platform.library': ('Approved library','Reviewed teaching material for confident assessment creation.','fa-book-open','Teaching resources'),
+'platform.audit_log': ('Audit history','A clear record of activity across your school workspace.','fa-shield-alt','Administration'),
+'platform.password': ('Your account','Keep your staff account secure and up to date.','fa-user-circle','Account settings'),
+'platform.login': ('Staff sign in','Your assessment tools, school resources, and paper history.','fa-graduation-cap','Ashoka Group of Schools'),
+'platform.new_paper': ('Create a question paper','Plan a balanced assessment with a precise question allocation.','fa-file-alt','Assessment studio'),
+'platform.job': ('Generation details','Follow your generation progress and review the results.','fa-layer-group','Your workspace'),
+'platform.paper': ('Review question paper','Review the questions, marking scheme, and approval status.','fa-file-alt','Assessment studio'),
+'platform.revise_paper': ('Revise question paper','Refine your assessment while preserving earlier versions.','fa-pen','Assessment studio')
+} %}
+{% set page = pages.get(request.endpoint, ('Assessment workspace','Tools for thoughtful teaching and assessment.','fa-graduation-cap','Ashoka Group of Schools')) %}
+{% include 'page_header.html' %}
+<main id="main-content">
+{% for category,message in get_flashed_messages(with_categories=true) %}<div class="notice {{ category }}" role="alert">{{ message }}</div>{% endfor %}
+{% block content %}{% endblock %}
+</main>
+{% include 'app_footer.html' %}
+</body></html>

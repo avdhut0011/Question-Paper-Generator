@@ -1,0 +1,7 @@
+<section class="qpg-page-header" aria-labelledby="qpg-page-title">
+  <div class="qpg-header-inner">
+    <div class="qpg-header-topline"><span class="qpg-eyebrow">{{ page[3] }}</span><span class="qpg-breadcrumb"><a href="{{ url_for('index') }}">Home</a><i class="fas fa-chevron-right" aria-hidden="true"></i>{{ page[0] }}</span></div>
+    <div class="qpg-heading-line"><span class="qpg-page-icon"><i class="fas {{ page[2] }}" aria-hidden="true"></i></span><div><h1 id="qpg-page-title">{{ page[0] }}</h1><p>{{ page[1] }}</p></div></div>
+    {% if current_user.is_authenticated %}<div class="mt-4"><span class="qpg-identity"><i class="fas fa-building" aria-hidden="true"></i>{{ current_user.school.name if current_user.school else 'Ashoka Group of Schools' }}<span aria-hidden="true">·</span>{{ current_user.role|replace('_',' ')|title }}</span></div>{% endif %}
+  </div>
+</section>

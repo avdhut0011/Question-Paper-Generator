@@ -1,0 +1,14 @@
+{% extends 'platform/base.html' %}{% block content %}<p>{{ school.name }} · Grade {{ snapshot.blueprint.grade }} · {{ snapshot.blueprint.subject }} · {{ snapshot.blueprint.total_marks }} marks · <span class="badge">{{ paper.status }}</span></p>
+{% if paper.status != 'approved' %}<div class="draft">Draft for staff review. Check factual correctness, source evidence, answer keys, and marking schemes before approval. Final downloads unlock after approval.</div>{% endif %}
+{% if paper.parent_id %}<p>Revision of <a href="{{ url_for('platform.paper',paper_id=paper.parent_id) }}">earlier paper</a>.</p>{% endif %}
+{% if paper.review_note %}<div class="notice">Review note: {{ paper.review_note }}</div>{% endif %}
+<div class="card actions">{% if paper.status in ['draft','rejected'] %}<form action="{{ url_for('platform.submit_paper',paper_id=paper.id) }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>Submit for approval</button></form>{% endif %}
+{% if paper.user_id == current_user.id %}<a class="button secondary" href="{{ url_for('platform.revise_paper',paper_id=paper.id) }}">Create revision</a>{% endif %}
+{% if paper.status == 'approved' %}{% for artifact in paper.job.artifacts %}<a class="button" href="{{ url_for('platform.artifact',artifact_id=artifact.id) }}">Download {{ artifact.kind }}</a>{% endfor %}{% endif %}</div>
+{% if paper.status == 'submitted' and current_user.role != 'teacher' and paper.user_id != current_user.id %}<form class="card" action="{{ url_for('platform.review_paper',paper_id=paper.id) }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><h2>Administrator review</h2><label>Review note<textarea name="note" maxlength="4000"></textarea></label><label class="check"><input type="checkbox" name="checked" value="yes">I have checked the questions, answers, source evidence, marking schemes, and suitability for this class.</label><label class="check"><input type="checkbox" name="publish_questions" value="yes">Also add these reviewed questions to this school's approved bank for future assessments.</label><button name="decision" value="approved">Approve this version</button> <button class="danger-button" name="decision" value="rejected">Request changes</button></form>{% endif %}
+<article class="card">{% set answers = true %}{% include 'platform/paper_questions.html' %}</article><details><summary>Generation details</summary><pre>Mode: {{ snapshot.mode }}
+Model: {{ snapshot.model or 'Approved bank / manual revision' }}
+Source version: {{ snapshot.source_version or '—' }}
+Schema version: {{ snapshot.schema_version }}
+Prompt version: {{ snapshot.prompt_version }}
+Token usage: {{ snapshot.usage|tojson(indent=2) }}</pre></details>{% endblock %}

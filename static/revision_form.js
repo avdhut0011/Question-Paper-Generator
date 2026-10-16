@@ -1,0 +1,8 @@
+(() => {
+  const hidden=document.getElementById('revision-questions'); if(!hidden)return;
+  let questions;try{questions=JSON.parse(hidden.value);}catch{return;}
+  const container=document.getElementById('question-editors');
+  function edit(parent,labelText,value,onChange,numeric=false){const label=document.createElement('label');label.textContent=labelText;const input=document.createElement(numeric?'input':'textarea');if(numeric){input.type='number';input.min='1';input.max='100';input.step='1';}input.required=true;input.value=value;input.addEventListener('input',()=>onChange(numeric?Number(input.value):input.value));label.append(input);parent.append(label);}
+  questions.forEach((q,index)=>{const card=document.createElement('section');card.className='card';const title=document.createElement('h2');title.textContent=`Question ${index+1} · ${q.type} · ${q.marks} marks · ${q.chapter}`;card.append(title);edit(card,'Question',q.stem,v=>q.stem=v);q.options.forEach((option,i)=>edit(card,`Option ${String.fromCharCode(65+i)}`,option,v=>q.options[i]=v));edit(card,'Correct answer',q.answer,v=>q.answer=v);edit(card,'Worked solution',q.solution,v=>q.solution=v);q.rubric.forEach(item=>{const row=document.createElement('div');row.className='row';edit(row,'Marking criterion',item.criterion,v=>item.criterion=v);edit(row,'Marks',item.marks,v=>item.marks=v,true);card.append(row);});if(q.source_reference){edit(card,'Source reference',q.source_reference,v=>q.source_reference=v);edit(card,'Exact supporting quote',q.source_quote,v=>q.source_quote=v);}container.append(card);});
+  hidden.form.addEventListener('submit',()=>hidden.value=JSON.stringify(questions));
+})();

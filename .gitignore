@@ -1,0 +1,14 @@
+.env
+.venv/
+.vscode/
+instance/
+uploads/
+build/
+dist/
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+*.sqlite
+*.db
+test-output/

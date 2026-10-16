@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Paper Generator - QPG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .feature-card {
+            height: 100%;
+            border: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .chat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .chat-card .feature-icon {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .benefits-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 80px 0;
+            margin-top: 80px;
+        }
+        
+        .benefit-item {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .benefit-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+        
+        .stats-section {
+            background: var(--gray-900);
+            color: white;
+            padding: 60px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ url_for('static', filename='account.js') }}" defer></script>
+    {% include 'theme_head.html' %}
+</head>
+<body class="qpg-app qpg-home">
+    {% include 'account_nav.html' %}
+    <div class="hero-section">
+        <div class="container hero-content">
+            <div class="mb-3">
+                <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                    <i class="fas fa-code me-1"></i>
+                    Created by <strong>Avadhut Jagtap</strong>
+                </span>
+            </div>
+            <h1 class="hero-title fade-in-up">Question Paper Generator</h1>
+            <p class="hero-subtitle fade-in-up">Create professional exam papers and question banks with AI-powered assistance. Support for AUS, AGA, and custom templates.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('generate_qp') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-file-pdf me-2"></i>Generate Paper
+                </a>
+                <a href="{{ url_for('chat') }}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-robot me-2"></i>AI Assistant
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="card feature-card fade-in-up">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h4 class="card-title mb-3" style="color:#1a1a45;">Question Bank</h4>
+                        <p class="card-text text-secondary">Create comprehensive question banks with multiple question types and difficulty levels</p>
+                        <a href="{{ url_for('generate_questions') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card feature-card fade-in-up">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h4 class="card-title mb-3" style="color:#6610f2;">Question Paper</h4>
+                        <p class="card-text text-secondary">Generate professionally formatted exam papers with AUS/AGA templates</p>
+                        <a href="{{ url_for('generate_qp') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card feature-card fade-in-up">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h4 class="card-title mb-3" style="color:#20c997;"">Upload & Enhance</h4>
+                        <p class="card-text text-secondary">Enhance existing question banks with AI-generated content and analysis</p>
+                        <a href="{{ url_for('upload_question_bank') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card feature-card chat-card fade-in-up">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h4 class="card-title mb-3 text-white">AI Assistant</h4>
+                        <p class="card-text text-white">Chat with our AI for instant help with academic questions and content creation</p>
+                        <a href="{{ url_for('chat') }}" class="btn btn-light">
+                            <i class="fas fa-comments me-2"></i>Start Chat
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item">
+                        <span class="stat-number">7+</span>
+                        <div class="stat-label">Question Types</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item">
+                        <span class="stat-number">5+</span>
+                        <div class="stat-label">Education Boards</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item">
+                        <span class="stat-number">3</span>
+                        <div class="stat-label">Export Formats</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <div class="stat-label">Possibilities</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="benefits-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-6 fw-bold mb-4">Why Choose QPG?</h2>
+                <p class="lead text-muted">Advanced features designed for modern educators</p>
+                <div class="mt-4">
+                    <div class="d-inline-flex align-items-center bg-white rounded-pill px-4 py-2 shadow-sm">
+                        <span class="qpg-avatar me-3" aria-label="Avadhut Jagtap">AJ</span>
+                        <div class="text-start">
+                            <div class="fw-bold text-dark">Avadhut Jagtap</div>
+                            <small class="text-muted">Creator & Developer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h5 class="mb-3">Bloom's Taxonomy</h5>
+                        <p class="text-muted">Questions categorized by cognitive levels for comprehensive assessment</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h5 class="mb-3">Perfect LaTeX</h5>
+                        <p class="text-muted">Flawless mathematical notation and scientific formula rendering</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h5 class="mb-3">All Boards</h5>
+                        <p class="text-muted">Support for CBSE, ICSE, IGCSE, SSC, HSC, AUS, and AGA formats</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h5 class="mb-3">AI-Powered</h5>
+                        <p class="text-muted">Advanced generative AI for contextually relevant questions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3 text-white">Question Paper Generator</h5>
+                    <p class="text-light">Professional exam paper creation with AI assistance. Supporting educators worldwide with modern tools for assessment creation.</p>
+                    <div class="mt-3">
+                        <small style="color:#b0c4de;">
+                            <i class="fas fa-code me-1"></i>
+                            Developed by <strong class="text-white">Avadhut Jagtap</strong>
+                        </small>                        
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h6 class="mb-3" style="color:#b0c4de;">Built for educators</h6><p class="text-light small">Ashoka Group of Schools</p>
+                    <div class="d-flex justify-content-md-end gap-3">
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">© 2025 QPG. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-light">Created with <i class="fas fa-heart text-danger"></i> by <strong class="text-white">Avadhut Jagtap</strong></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

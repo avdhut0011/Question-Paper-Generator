@@ -1,0 +1,226 @@
+<!-- templates/preview.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Question Paper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .preview-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .preview-header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .action-buttons .btn {
+            min-width: 200px;
+            margin: 0 10px 10px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+        }
+        .preview-content {
+            padding: 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0 0 10px 10px;
+        }
+        .btn-download {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border: none;
+        }
+        .btn-download:hover {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+        }
+        #loading-spinner {
+            display: none;
+            margin-left: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ url_for('static', filename='account.js') }}" defer></script>
+    {% include 'theme_head.html' %}
+</head>
+<body class="bg-light qpg-app qpg-form-page">
+    {% include 'account_nav.html' %}
+    {% set page = (('Question Bank Preview' if file_type in ['excel','word'] else 'Question Paper Preview'), 'Review your generated assessment before downloading.', 'fa-file-alt', 'Assessment studio') %}
+    {% include 'page_header.html' %}
+    <div class="container py-5">
+        <div class="preview-container">
+            <div class="preview-content">
+                <!-- Question Bank Preview (Excel/Word) -->
+                {% if file_type == "excel" and filename %}
+                    <div class="mb-3">
+                        <button class="btn btn-download me-2" onclick="handleDownload('{{ filename }}')" id="download-excel-btn">
+                            <i class="fas fa-file-excel me-2"></i>Download Excel
+                            <span class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                    </div>
+                    <div id="excel-preview"></div>
+                    <div id="download-status" class="alert" style="display: none;"></div>
+                    <script>
+                    fetch("/uploads/{{ filename }}")
+                      .then(response => response.arrayBuffer())
+                      .then(data => {
+                        const workbook = XLSX.read(data, {type: "array"});
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const html = XLSX.utils.sheet_to_html(sheet);
+                        document.getElementById("excel-preview").innerHTML = html;
+                      })
+                      .catch(error => {
+                        console.error("Error loading Excel preview:", error);
+                        document.getElementById("excel-preview").innerHTML = 
+                            '<div class="alert alert-warning">Could not load preview. The file will still download.</div>';
+                      });
+                    </script>
+                {% elif file_type == "word" and filename %}
+                    <div class="mb-3">
+                        <button class="btn btn-download me-2" onclick="handleDownload('{{ filename }}')" id="download-word-btn">
+                            <i class="fas fa-file-word me-2"></i>Download Word
+                            <span class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Word document preview is not available in browser. Click download to open the file.
+                        <br><small>The Word document contains the generated questions and any embedded images.</small>
+                    </div>
+                {% elif file_type == "pdf" and filename %}
+                    <div class="mb-3">
+                        <button class="btn btn-download me-2" onclick="handleDownload('{{ filename }}')">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                            <span class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                        {% if tex_filename %}
+                        <button class="btn btn-secondary" onclick="handleDownload('{{ tex_filename }}')">
+                            <i class="fas fa-file-code me-2"></i>Download LaTeX
+                            <span class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <iframe src="/uploads/{{ filename }}" width="100%" height="600px" style="border:1px solid #dee2e6;"></iframe>
+                {% endif %}
+                
+                {% if file_type == 'html' and html_filename %}
+                <a class="btn btn-download mb-3" href="/download/{{ html_filename }}">Download HTML</a>
+                <iframe title="Question paper preview" src="/uploads/{{ html_filename }}" sandbox="allow-same-origin" width="100%" height="700" style="border:0"></iframe>
+                {% if tex_filename %}<a class="btn btn-secondary mt-3" href="/download/{{ tex_filename }}">Download LaTeX</a>{% endif %}
+                {% endif %}
+                <!-- HTML Preview Content -->
+                {% if preview_html %}
+                    {{ preview_html|safe }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="d-flex justify-content-center flex-wrap action-buttons mt-4">
+            <!-- Question Paper Actions -->
+            {% if file_type == "pdf" and filename %}
+                <button class="btn btn-download" onclick="handleDownload('{{ filename }}')">
+                    <i class="fas fa-file-pdf me-2"></i>Download PDF
+                    <span class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                </button>
+                {% if tex_filename %}
+                <button class="btn btn-secondary" onclick="handleDownload('{{ tex_filename }}')">
+                    <i class="fas fa-file-code me-2"></i>Download LaTeX
+                    <span class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                </button>
+                {% endif %}
+            {% endif %}
+            
+            <!-- Navigation Actions -->
+            {% if file_type == "excel" or file_type == "word" %}
+            <a href="{{ url_for('generate_questions') }}" class="btn btn-outline-primary">
+                <i class="fas fa-edit me-2"></i>Generate More Questions
+            </a>
+            {% else %}
+            <a href="{{ url_for('generate_qp') }}" class="btn btn-outline-primary">
+                <i class="fas fa-edit me-2"></i>Edit & Regenerate
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-2"></i>Back to Home
+            </a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showStatus(message, isError = false) {
+            const statusDiv = document.getElementById('download-status');
+            statusDiv.textContent = message;
+            statusDiv.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function handleDownload(filename) {
+            const btn = event.target.closest('button');
+            const spinner = btn.querySelector('.spinner-border');
+            
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const downloadUrl = `/download/${encodeURIComponent(filename)}`;
+                
+                if (window.pywebview) {
+                    try {
+                        // First try to use the API if available
+                        if (pywebview.api && pywebview.api.handle_download) {
+                            const success = await pywebview.api.handle_download(downloadUrl);
+                            if (success) {
+                                showStatus('File downloaded and opened successfully!');
+                            } else {
+                                throw new Error('Could not download or open file');
+                            }
+                        } else {
+                            // Fallback to direct download if API not available
+                            window.location.href = downloadUrl;
+                            showStatus('Download started!');
+                        }
+                    } catch (e) {
+                        console.error('Desktop download error:', e);
+                        showStatus(e.message || 'Download failed in desktop mode', true);
+                    }
+                } else {
+                    // Browser mode - standard download
+                    const response = await fetch(downloadUrl);
+                    if (!response.ok) throw new Error('Download failed');
+                    
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = ({{ download_names|default({})|tojson }})[filename] || filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                    showStatus('Download started successfully!');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                showStatus(error.message || 'Download failed', true);
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+    {% include 'app_footer.html' %}
+</body>
+</html>

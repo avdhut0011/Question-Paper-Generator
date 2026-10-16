@@ -1,0 +1,17 @@
+{% extends 'platform/base.html' %}{% block content %}<p>Only publish material and question keys that have been reviewed by the school. Sources are immutable versions; add a new version when the curriculum changes.</p>
+<p><a class="button secondary" href="{{ url_for('platform.library_template') }}">Download reviewed-bank spreadsheet template</a></p>
+<form method="post" class="card" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><div class="row"><div><label>School<select name="school_id">{% for school in schools %}<option value="{{ school.id }}">{{ school.name }}</option>{% endfor %}</select></label></div><div><label>Content type<select name="action"><option value="source">Approved source passages</option><option value="questions">Reviewed question bank</option></select></label></div></div>
+<div class="row"><label>Grade<input name="grade" required maxlength="20"></label><label>Subject<input name="subject" required maxlength="100"></label><label>Board<input name="board" required maxlength="50"></label></div>
+<div class="row"><label>Source name (for passages)<input name="name" maxlength="160"></label><label>Source version (for passages)<input name="version" maxlength="80" placeholder="Textbook edition / academic year"></label></div>
+<label>Upload reviewed material<input type="file" name="content_file" accept=".pdf,.txt,.xlsx,.json"></label><p class="muted">Sources: readable PDF or UTF-8 TXT. Question banks: completed XLSX template or JSON. Choose the matching content type above. Scanned PDFs need verified OCR before import.</p>
+<label>Or paste source text / question-bank JSON</label><textarea name="content" rows="8" spellcheck="false" placeholder="Paste approved source text here. Separate passages with a blank line."></textarea>
+<details><summary>Question bank JSON format</summary><p>Use an array. Every item needs these fields; options are empty for non-choice questions.</p><pre>[{
+  "stem": "What is one half plus one quarter?",
+  "type": "MCQ", "marks": 1, "chapter": "Fractions",
+  "difficulty": "easy", "bloom": "Understand",
+  "options": ["1/4", "1/2", "3/4", "1"], "answer": "3/4",
+  "solution": "Convert one half to two quarters, then add one quarter.",
+  "rubric": [{"criterion": "Selects three quarters", "marks": 1}],
+  "source_reference": "page-12", "source_quote": "Reviewed source excerpt"
+}]</pre></details><p><button>Publish reviewed content</button></p></form>
+<div class="card"><h2>Approved sources</h2><p>{{ question_count }} approved-bank questions available.</p><ul>{% for source in sources %}<li>{{ source.name }} · {{ source.version }} · Grade {{ source.grade }} · {{ source.subject }} · {{ source.board }}</li>{% else %}<li>No approved sources yet.</li>{% endfor %}</ul></div>{% endblock %}

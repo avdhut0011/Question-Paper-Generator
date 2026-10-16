@@ -1,0 +1,49 @@
+/* Layout utilities for account and administration pages; visual tokens are shared. */
+.qpg-platform main { max-width: 1228px; margin: 30px auto; padding: 0 24px; min-height: 45vh; }
+.qpg-platform main .card { padding: 26px; margin: 0 0 24px; overflow: visible; }
+.qpg-platform main .narrow { max-width: 510px; margin: 0 auto 32px; }
+.qpg-platform main .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 275px), 1fr)); gap: 24px; align-items: start; }
+.qpg-platform main .grid > .card { margin: 0; height: 100%; }
+.qpg-platform main .row { display: flex; flex-direction: row; gap: 18px; flex-wrap: wrap; align-items: end; margin: 0 0 8px; }
+.qpg-platform main .row > * { flex: 1 1 170px; padding: 0; width: auto; min-width: 0; }
+.qpg-platform main .row > button { flex: 0 0 auto; padding: 11px 20px; margin-bottom: 0; }
+.qpg-platform main .row > input[type=hidden] { display: none; }
+.qpg-platform main h2 { font-size: 17px; margin: 0 0 18px; letter-spacing: -.3px; }
+.qpg-platform main p { font-size: 13px; color: #64748b; }
+.qpg-platform main label { display: block; margin-top: 16px; }
+.qpg-platform main input, .qpg-platform main select, .qpg-platform main textarea { width: 100%; }
+.qpg-platform main label input, .qpg-platform main label select { margin-top: 8px; }
+.qpg-platform main textarea.code { font: 12px/1.7 Consolas, monospace; min-height: 330px; }
+.qpg-platform main button, .qpg-platform .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; line-height: 1.4; cursor: pointer; }
+.qpg-platform main button { margin-top: 12px; }
+.qpg-platform .page-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.qpg-platform .notice { margin: 0 0 24px; border: 1px solid #d6e5ff; }
+.qpg-platform .notice.danger { background: #fff1f2; color: #9f1239; border-color: #fecdd3; }
+.qpg-platform .notice.success { background: #ecfdf5; color: #166534; border-color: #bbf7d0; }
+.qpg-platform .danger-button { color: #9f1239; background: #fff1f2; border-color: #fecdd3; box-shadow: none; }
+.qpg-platform .table-wrap { overflow-x: auto !important; }
+.qpg-platform table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12px; line-height: 1.6; }
+.qpg-platform th { text-align: left; background: #f8fafc; color: #64748b; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; padding: 15px 16px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+.qpg-platform td { padding: 18px 16px; border-bottom: 1px solid #edf1f7; color: #334155; vertical-align: top; }
+.qpg-platform tr:last-child td { border-bottom: 0; }
+.qpg-platform tbody tr:hover { background: #fafbff; }
+.qpg-platform td form { min-width: 180px; }
+.qpg-platform td form + form { margin-top: 15px; }
+.qpg-platform td input { max-width: 240px; }
+.qpg-platform .badge { background: #edf3ff; color: #345eaa; border-radius: 100px; padding: 7px 11px; font-size: 10px; font-weight: 600; }
+.qpg-platform .pagination { display: flex; justify-content: space-between; align-items: center; gap: 16px; color: #64748b; font-size: 12px; margin: 24px 0; }
+.qpg-platform .pagination a { padding: 8px 14px; border: 1px solid #dbe3f1; background: #fff; border-radius: 9px; text-decoration: none; }
+.qpg-platform .actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.qpg-platform .actions form { margin: 0; }
+.qpg-platform .actions button { margin: 0; }
+.qpg-platform .question { padding: 22px 0; border-bottom: 1px solid #edf1f7; }
+.qpg-platform .question:last-child { border-bottom: 0; }
+.qpg-platform .stem { white-space: pre-wrap; font-size: 14px; }
+.qpg-platform .answer { background: #f5f8ff; padding: 16px; border-radius: 12px; margin-top: 16px; font-size: 13px; }
+.qpg-platform .draft { padding: 16px 20px; margin-bottom: 24px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; font-size: 13px; }
+.qpg-platform .check { display: flex; align-items: start; gap: 10px; font-weight: 400; }
+.qpg-platform .check input { width: 17px; height: 17px; flex: 0 0 auto; margin-top: 4px; }
+.qpg-platform details summary { cursor: pointer; font-size: 12px; font-weight: 600; color: #345483; padding: 10px 0; }
+.qpg-platform pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f5f7fb; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 11px; }
+.qpg-platform .required { color: #be123c; }
+@media(max-width:600px) { .qpg-platform main { padding: 0 16px; margin-top: 22px; }.qpg-platform main .card { padding: 19px; }.qpg-platform main .row > * { flex-basis: 100%; }.qpg-platform .table-wrap { padding: 8px !important; }.qpg-platform .page-actions { justify-content: flex-start; } }

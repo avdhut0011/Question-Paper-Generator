@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-dark qpg-nav" aria-label="Main navigation">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('index') }}"><span class="qpg-brand-icon"><i class="fas fa-graduation-cap" aria-hidden="true"></i></span><span><span class="qpg-brand-name">QPG</span><span class="qpg-brand-caption">Ashoka Group of Schools</span></span></a>
+    <div class="qpg-nav-links">
+      {% if current_user.is_authenticated %}
+      <a class="qpg-nav-link {{ 'is-active' if request.endpoint in ['index','platform.home'] else '' }}" href="{{ url_for('index') }}"><i class="fas fa-home" aria-hidden="true"></i>Home</a>
+      <a class="qpg-nav-link {{ 'is-active' if request.endpoint == 'platform.history' else '' }}" href="{{ url_for('platform.history') }}"><i class="fas fa-history" aria-hidden="true"></i>History</a>
+      {% if current_user.role != 'teacher' %}
+      <a class="qpg-nav-link {{ 'is-active' if request.endpoint == 'platform.admin' else '' }}" href="{{ url_for('platform.admin') }}"><i class="fas fa-users" aria-hidden="true"></i>Staff & schools</a>
+      <a class="qpg-nav-link {{ 'is-active' if request.endpoint == 'platform.library' else '' }}" href="{{ url_for('platform.library') }}"><i class="fas fa-book-open" aria-hidden="true"></i>Library</a>
+      <a class="qpg-nav-link {{ 'is-active' if request.endpoint == 'platform.audit_log' else '' }}" href="{{ url_for('platform.audit_log') }}"><i class="fas fa-shield-alt" aria-hidden="true"></i>Audit</a>
+      {% endif %}
+      <a class="qpg-nav-link {{ 'is-active' if request.endpoint == 'platform.password' else '' }}" href="{{ url_for('platform.password') }}"><i class="fas fa-user-circle" aria-hidden="true"></i>{{ current_user.name }}</a>
+      <form action="{{ url_for('platform.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="qpg-signout" type="submit">Sign out</button></form>
+      {% else %}<a class="qpg-nav-link is-active" href="{{ url_for('platform.login') }}"><i class="fas fa-user-circle" aria-hidden="true"></i>Staff sign in</a>{% endif %}
+    </div>
+  </div>
+</nav>
